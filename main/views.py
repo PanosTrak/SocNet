@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 
 def homepage_view(request):
-    return HttpResponse('Hello world')
+    return render(request, 'main/home.html')
 
 
 def login_view(request):
