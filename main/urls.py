@@ -24,4 +24,7 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='register'),
     path('register/', views.register_view, name='register'),
+    path('profile/', views.redirect_to_current_profile, name='redirect_to_current_profile'),
+    path('profile/<username>/', views.profile_view, name='profile'),
+    path('search_profile/', views.search_profile, name='profile_profile'),
 ]

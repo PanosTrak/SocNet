@@ -1,6 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.models import User
 
 
 def homepage_view(request):
@@ -60,4 +61,42 @@ def register_view(request):
         if form.is_valid:
             user = form.save()
             login(request, user)
+            return redirect('main:homepage')
+
+
+def redirect_to_current_profile(request):
+
+    # Redirect the user if he hasnt logged in yet    
+    if not request.user.is_authenticated:
+        return redirect('main:login')
+
+    
+    if request.method == 'GET':
+        return redirect('main:profile', username=(request.user.username))
+
+
+def profile_view(request, username):
+    
+    # Redirect the user if he hasnt logged in yet
+    if not request.user.is_authenticated:
+        return redirect('main:login')
+    
+
+    if request.method == 'GET':
+        user = User.objects.filter(username=username).first()
+        return render(request, 'main/profile.html', {'user' : user})
+
+def search_profile(request):
+
+    # Redirect the user if he hasnt logged in yet
+    if not request.user.is_authenticated:
+        return redirect('main:login')
+
+    
+    if request.method == 'GET':
+        search = request.GET.get('search')
+        user = User.objects.filter(username=search).first()
+        if user is not None:
+            return redirect('main:profile', username=(user.username))
+        else:
             return redirect('main:homepage')
