@@ -1,9 +1,21 @@
 {% extends 'main/layout.html' %}
 
 {% block content %}
-	<form method="POST">
+<form method="POST">
 		{% csrf_token %}
-		{{ form.as_p }}
-		<input type="submit" value="Submit">
+		{% comment %} {{ form }} {% endcomment %}
+		<div class="form-group">
+			<label for="loginEmailInput">{{ form.email.label }}</label>
+			{% comment %} <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email"> {% endcomment %}
+			{{ form.email }}
+			<small id="emailHelp" class="form-text text-muted">{{ form.email.help_text }}</small>
+		</div>
+		<div class="form-group">
+			<label for="loginPasswordInput">{{ form.password.label }}</label>
+			{% comment %} <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password"> {% endcomment %}
+			{{ form.password}}
+		</div>
+		<button type="submit" class="btn btn-primary">Submit</button>
 	</form>
-{% endblock content %}
+	<small class="small">If you dont have an account, create one <a href="/register">here</a> !</small>
+	{% endblock content %}

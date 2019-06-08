@@ -2,7 +2,8 @@ from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .forms import AccountCreationForm
+from django.contrib import messages
+from .forms import AccountCreationForm, AccountAuthentication
 
 
 def homepage_view(request):
@@ -16,25 +17,26 @@ def login_view(request):
         return redirect('main:homepage')
 
     if request.method == 'GET':
-        form = AuthenticationForm()
+        form = AccountAuthentication()
         return render(request, 'main/login.html', {'title': 'Login', 'form': form})
 
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = AccountAuthentication(data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
+            # email = form.cleaned_data.get('email')
+            # password = form.cleaned_data.get('password')
+            user = form.authenticate_via_email()
 
             if user is not None:
                 login(request, user)
                 return redirect('main:homepage')
             else:
+                messages.error(request, 'Account doesn\'t exist. Create one <a href="/register" class="alert-link">Here!</a>')
                 return redirect('main:login')
 
         else:
             for error in form.error_messages:
-                print(form.error_messages[error])
+                messages.error(request, form.error_messages[error])
             return redirect('main:login')
 
 
@@ -51,7 +53,7 @@ def register_view(request):
 
     if request.method == 'GET':
         form = AccountCreationForm()
-        return render(request, 'main/register.html', {'title' : 'Register', 'form': form})
+        return render(request, 'main/register.html', {'title': 'Register', 'form': form})
 
     if request.method == 'POST':
         form = AccountCreationForm(request.POST)
@@ -79,7 +81,7 @@ def profile_view(request, username):
 
     if request.method == 'GET':
         user = User.objects.filter(username=username).first()
-        return render(request, 'main/profile.html', {'title' : user.username, 'other_user': user})
+        return render(request, 'main/profile.html', {'title': user.username, 'other_user': user})
 
 
 def search_profile(request):
