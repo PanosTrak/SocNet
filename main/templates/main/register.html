@@ -1,9 +1,45 @@
 {% extends 'main/layout.html' %}
 
 {% block content %}
-	<form method="POST">
-		{% csrf_token %}
-		{{ form.as_p }}
-		<input type="submit" value="Submit">
-	</form>
+<form method="POST">
+	{% csrf_token %}
+	{% comment %} {{ form.as_p }} {% endcomment %}
+
+	<div class="form-group">
+		<label for="registerUsernameInput">{{ form.username.label }}</label>
+		{% comment %} <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email">
+		{% endcomment %}
+		{{ form.username }}
+		<small id="emailHelp" class="form-text text-muted">{{ form.email.help_text }}</small>
+	</div>
+	<div class="form-group">
+		<label for="registerEmailInput">{{ form.email.label }}</label>
+		{% comment %} <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email">
+		{% endcomment %}
+		{{ form.email }}
+		<small id="emailHelp" class="form-text text-muted">{{ form.email.help_text }}</small>
+	</div>
+	<div class="form-group">
+		<label for="registerPassword1Input">{{ form.password1.label }}</label>
+		{% comment %} <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+		{% endcomment %}
+		{{ form.password1 }}
+	</div>
+	<div class="form-group">
+		<label for="registerPassword2Input">{{ form.password2.label }}</label>
+		{% comment %} <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+		{% endcomment %}
+		{{ form.password2 }}
+	</div>
+	<div class="form-group">
+		<label for="registerDateBornInput">{{ form.date_born.label }}</label>
+		{% comment %} <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+		{% endcomment %}
+		{{ form.date_born }}
+	</div>
+	<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<small class="small">If you already have an account, login <a href="/login">here</a> !</small>
+
+</form>
 {% endblock content %}
