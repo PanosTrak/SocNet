@@ -1,8 +1,43 @@
 from django import forms
+from django.forms import ValidationError
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from .models import Account
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+from .models import Account, Profile
+
+
+def validate_username(username):
+    if ' ' in username:
+        raise ValidationError(
+            _('%(username)s Cant contain space'),
+            params={
+                'username': username
+            }
+        )
+    if '@' in username:
+        raise ValidationError(
+            _('%(username)s can\' contain "@"'),
+            params={
+                'username': username
+            }
+        )
+
+
+def validate_email(email):
+    if Account.objects.filter(email=email).exists():
+        raise ValidationError('Email already exists')
+
+
+def validate_date_born(date_born):
+    if timezone.now().date() - date_born < timezone.timedelta(6574):
+        raise ValidationError(
+            _('%(date_born)s should be more than 18'),
+            params={
+                'date_born': date_born
+            }
+        )
 
 
 class AccountCreationForm(forms.ModelForm):
@@ -15,6 +50,7 @@ class AccountCreationForm(forms.ModelForm):
                 'id': 'registerUsernameInput'
             },
         ),
+        validators=[validate_username]
     )
     email = forms.EmailField(
         label='Email',
@@ -25,6 +61,7 @@ class AccountCreationForm(forms.ModelForm):
                 'id': 'registerEmailInput'
             },
         ),
+        validators=[validate_email]
     )
     password1 = forms.CharField(
         label='Password',
@@ -47,12 +84,13 @@ class AccountCreationForm(forms.ModelForm):
         ),
     )
     date_born = forms.DateField(
-        widget=forms.DateInput(
+        widget=forms.SelectDateWidget(
+            years=[x for x in range(1940, timezone.now().date().year + 1)],
             attrs={
-                'type': 'date',
                 'class': 'form-control',
-            }
-        )
+            },
+        ),
+        validators=[validate_date_born]
     )
 
     class Meta:
@@ -61,10 +99,10 @@ class AccountCreationForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super(AccountCreationForm, self).save(commit=False)
-        user.username = self.cleaned_data.get('username')
-        user.email = self.cleaned_data.get('email')
-        user.password = self.cleaned_data.get('password1')
-        user.date_born = self.cleaned_data.get('date_born')
+        user.username = self.cleaned_data['username']
+        user.email = self.cleaned_data['email']
+        user.set_password(self.cleaned_data['password1'])
+        user.date_born = self.cleaned_data['date_born']
 
         if commit:
             user.save()
@@ -75,16 +113,10 @@ class AccountCreationForm(forms.ModelForm):
         password2 = self.cleaned_data.get('password2')
 
         if not password2:
-            raise forms.ValidationError("You must confirm your password")
+            raise ValidationError("You must confirm your password")
         if password1 != password2:
-            raise forms.ValidationError("Your passwords do not match")
+            raise ValidationError("Your passwords do not match")
         return password2
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if Account.objects.filter(email=email).exists():
-            raise forms.ValidationError('Email already exists')
-        return email
 
 
 class AccountAuthentication(forms.Form):
@@ -130,3 +162,14 @@ class AccountAuthentication(forms.Form):
             except ObjectDoesNotExist:
                 pass
         return None
+
+class ProfileCreationForm(forms.ModelForm):
+
+    image = forms.ImageField(
+        label="Profile Picture",
+        widget=forms.FileInput(),
+    )
+
+    class Meta:
+        model = Profile
+        fields = ['image'] 

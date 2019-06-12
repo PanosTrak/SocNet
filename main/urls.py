@@ -27,4 +27,7 @@ urlpatterns = [
     path('profile/', views.redirect_to_current_profile, name='redirect_to_current_profile'),
     path('profile/<username>/', views.profile_view, name='profile'),
     path('search_profile/', views.search_profile, name='profile_profile'),
+    path('settings/', views.settings, name='settings'),
+    path('settings/profile/', views.profile_settings, name='profile_settings'),
+    path('settings/account/', views.account_settings, name='account_settings'),
 ]
