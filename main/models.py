@@ -6,15 +6,21 @@ from django.conf import settings
 class Account(AbstractUser):
     date_born = models.DateField(null=True)
 
+    def __str__(self):
+        return self.account.username
+
 
 class Profile(models.Model):
     bio = models.TextField(max_length=200)
     account = models.OneToOneField(
-        to=Account, on_delete=models.SET_NULL, null=True)
+        Account,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+
+    def __str__(self):
+        return self.account.username
 
 
-class FriendList(models.Model):
-    account_1 = models.ForeignKey(
-        'Profile', on_delete=models.CASCADE, related_name='account_1')
-    account_2 = models.ForeignKey(
-        'Profile', on_delete=models.CASCADE, related_name='account_2')
+class Friend(models.Model):
+    profiles = models.ManyToManyField(Profile)
