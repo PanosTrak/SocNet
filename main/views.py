@@ -1,10 +1,12 @@
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import AccountCreationForm, AccountAuthentication, ProfileCreationForm
+from .models import Profile, Account
+
+User = get_user_model()
 
 
 def homepage_view(request):
@@ -60,11 +62,19 @@ def register_view(request):
     if request.method == 'POST':
         form = AccountCreationForm(request.POST)
         if form.is_valid():
+            profile = Profile()
+            profile.save()
             user = form.save()
+            profile.account = user
+            profile.save()
             login(request, user)
+
             return redirect('main:homepage')
 
         messages.error(request, 'Form not valid')
+        if form.errors:
+            for error in form.errors:
+                messages.error(request, form.errors[error])
         return redirect('main:register')
 
 
@@ -106,6 +116,24 @@ def profile_settings(request):
     if request.method == 'GET':
         form = ProfileCreationForm()
         return render(request, 'main/profile_settings.html', {'title': 'Profile Setup', 'form': form})
+
+    if request.method == 'POST':
+        form = ProfileCreationForm(request.POST)
+        if form.is_valid():
+            account = Account.objects.filter(username=request.user.username).first()
+            account.profile.bio = form.cleaned_data['bio']
+            account.save()
+            account.profile.save()
+            messages.success(request, 'Profile saved successfully')
+            return redirect('main:profile_settings')
+
+        messages.error(request, 'Error updating profile')
+        if form.errors:
+            for error in form.errors:
+                print(form.errors[error])
+        return redirect('main:profile_settings')
+        
+ 
 
 
 @login_required(login_url='main:login')
