@@ -5,9 +5,9 @@
 		{% csrf_token %}
 		{% comment %} {{ form }} {% endcomment %}
 		<div class="form-group">
-			<label for="loginEmailInput">{{ form.image.label }}</label>
+			<label>{{ form.bio.label }}</label>
 			{% comment %} <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Enter email"> {% endcomment %}
-			{{ form.image }}
+			{{ form.bio }}
 			<small id="emailHelp" class="form-text text-muted">{{ form.email.help_text }}</small>
 		</div>
 		<!-- <div class="form-group">
@@ -17,5 +17,4 @@
 		</div> -->
 		<button type="submit" class="btn btn-primary">Submit</button>
 	</form>
-	<small class="small">If you dont have an account, create one <a href="/register">here</a> !</small>
 	{% endblock content %}
