@@ -16,8 +16,16 @@
       <li class="nav-item">
         <a class="nav-link" href="/">Home</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/notifications">Notifications</a>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          Notifications
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/notifications/friendrequests"><b><i>2</i></b> | Friend Requests</a>
+          <a class="dropdown-item" href="#">Notification_1</a>
+          <a class="dropdown-item" href="#">Notification_1</a>
+        </div>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
@@ -32,9 +40,6 @@
           <a class="dropdown-item" href="/logout">Log Out</a>
         </div>
       </li>
-      {% comment %} <li class="nav-item">
-        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-      </li> {% endcomment %}
     </ul>
     <form class="form-inline my-2 my-lg-0" action="/search_profile" method="GET">
       <div class="input-group">
