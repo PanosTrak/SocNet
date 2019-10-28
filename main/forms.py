@@ -1,7 +1,5 @@
 from django import forms
 from django.forms import ValidationError
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -11,14 +9,14 @@ from .models import Account, Profile
 def validate_username(username):
     if ' ' in username:
         raise ValidationError(
-            _('%(username)s Cant contain space'),
+            _('%(username)s can\'t contain space'),
             params={
                 'username': username
             }
         )
     if '@' in username:
         raise ValidationError(
-            _('%(username)s can\' contain "@"'),
+            _('%(username)s can\'t contain "@"'),
             params={
                 'username': username
             }
@@ -145,7 +143,7 @@ class AccountAuthentication(forms.Form):
     )
 
     class Meta:
-        model = User
+        model = Account
         # widgets = {
         #     'email': forms.EmailInput(attrs={'class': 'form-control', 'aria-describedby': 'emailHelp', 'placeholder': 'Enter email'}),
         #     'password' : forms.PasswordInput(attrs={'class' : 'form-control', 'placeholder' : 'Password' })
@@ -156,20 +154,21 @@ class AccountAuthentication(forms.Form):
         email = self.cleaned_data['email']
         if email:
             try:
-                user = User.objects.get(email__iexact=email)
+                user = Account.objects.get(email__iexact=email)
                 if user.check_password(self.cleaned_data['password']):
                     return user
             except ObjectDoesNotExist:
                 pass
         return None
 
+
 class ProfileCreationForm(forms.ModelForm):
 
-    image = forms.ImageField(
-        label="Profile Picture",
-        widget=forms.FileInput(),
+    bio = forms.CharField(
+        max_length=200,
+        widget=forms.Textarea()
     )
 
     class Meta:
         model = Profile
-        fields = ['image'] 
+        fields = ['bio']
