@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import AccountCreationForm, AccountAuthentication, ProfileCreationForm
-from .models import Profile, Account
+from .models import Profile, Account, Friend
 
 User = get_user_model()
 
@@ -88,9 +88,18 @@ def redirect_to_current_profile(request):
 @login_required(login_url='main:login')
 def profile_view(request, username):
 
+    # TODO return 404 if user not found
     if request.method == 'GET':
-        user = User.objects.filter(username=username).first()
-        return render(request, 'main/profile.html', {'title': user.username, 'other_user': user})
+        other_user = User.objects.filter(username=username).first()
+        p1 = Profile.objects.filter(account=request.user).first()
+        p2 = Profile.objects.filter(account=other_user).first()
+        are_friends = False
+        if p1 != p2:
+            friend = (p1.friend_set.all() &
+                      p2.friend_set.all()).first()
+            if friend != None:
+                are_friends = True
+        return render(request, 'main/profile.html', {'title': other_user.username, 'other_user': other_user, 'are_friends': are_friends})
 
 
 @login_required(login_url='main:login')
@@ -120,7 +129,8 @@ def profile_settings(request):
     if request.method == 'POST':
         form = ProfileCreationForm(request.POST)
         if form.is_valid():
-            account = Account.objects.filter(username=request.user.username).first()
+            account = Account.objects.filter(
+                username=request.user.username).first()
             account.profile.bio = form.cleaned_data['bio']
             account.save()
             account.profile.save()
@@ -132,8 +142,6 @@ def profile_settings(request):
             for error in form.errors:
                 print(form.errors[error])
         return redirect('main:profile_settings')
-        
- 
 
 
 @login_required(login_url='main:login')
