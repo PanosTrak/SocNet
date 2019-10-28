@@ -1,5 +1,33 @@
 {% extends 'main/layout.html' %}
 
 {% block content %}
-	<h1>{{ other_user.username }}</h1>
+
+<br>
+<div class="row">
+
+	<div class="col-4">
+		<img src="https://api.adorable.io/avatars/285/{{other_user.username}}@socnet.png">
+	</div>
+
+	<div class="col-8">
+		<div class="jumbotron">
+			<h1 class="display-4">@{{ other_user.username }}</h1>
+			<p class="lead">{{ other_user.profile.bio }}</p>
+			<hr class="my-4">
+			<p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+
+			{% if user.username == other_user.username %}
+				<a class="btn btn-primary btn-lg" href="#" role="button">Edit Profile</a>
+				<a class="btn btn-primary btn-lg" href="#" role="button">Somethin</a>
+				<a class="btn btn-primary btn-lg" href="#" role="button">Other</a>
+				<a class="btn btn-primary btn-lg" href="#" role="button">Else</a>
+			{% else %}
+				<a class="btn btn-outline-success btn-lg" href="#" role="button">Add Friend</a>
+				<a class="btn btn-outline-danger btn-lg" href="#" role="button">Report</a>
+				<a class="btn btn-primary btn-lg" href="#" role="button">Other</a>
+				<a class="btn btn-primary btn-lg" href="#" role="button">Else</a>
+			{% endif %}
+		</div>
+	</div>
+</div>
 {% endblock content %}
